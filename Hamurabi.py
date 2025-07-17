@@ -10,112 +10,184 @@ class Hammurabi:
     def playGame(self):
         # declare local variables here: grain, population, etc.
         # statements go after the declarations
-        self.people=100
-        self.bushels=2800
-        self.acres=1000
-        self.price=19
         
+        
+        
+        year=1
+        acres=1000
+        bushels=2800
+        population=100
+        price=19
 
-    # other methods go here
+        deaths=0
+        starved=0
+        harvest=3000
+        harvested_per_acre=3
+        immigrants=5
+        rats_ate=200
+
+        print("CONGRATULATIONS, YOU ARE THE NEWEST RULER OF ANCIENT SUMER, ELECTED FOR A TEN YEAR TERM OF OFFICE \n"
+              "YOUR DUTIES ARE TO DISPENSE FOOD, DIRECT FARMING, AND BUY AND SELL LAND AS NEEDED TO SUPPORT YOU PEOPLE \n" \
+              "WATCH OUT FOR RAT INFESTATIONS AND THE PLAGUE! \n" \
+              "GRAIN IS THE GENERAL CURRENCY, MEASURED IN BUSHELS \n" \
+              "THE FOLLOWING WILL HELP YOU IN YOUR DECISIONS: \n" \
+              " \n" \
+              "    EACH PERSON NEEDS AT LEAST 20 BUSHELS OF GRAIN TO SURVIVE \n" \
+              "    EACH PERSON CAN FARM AT MOST 10 ACRES \n" \
+              "    THE MARKET PRICE FLUCTUATES EVERY YEAR \n" \
+              "    IT TAKES 2 BUSHELS OF GRAIN TO FARM AN ACRE OF LAND \n" \
+              " \n" \
+              "RULE WISELY AND YOU WILL BE SHOWERED WITH APPRECIATION AT THE END OF YOUR TERM \n" \
+              "RULE POORLY AND YOU WILL BE KICKED OUT OF OFFICE! \n" \
+              " \n")
+
+        
+        start=str(input("DO YOU WISH TO START (Y/N)?: "))
+        if start=="Y":
+            print("GOOD LUCK... \n")
+        else:
+            print("TOO BAD \n")
+
+        while year<=10:
+            self.startOfYearReport(year, acres, bushels, population, price, starved, harvest, harvested_per_acre, immigrants, rats_ate)
+            
+            acres_bought=self.askHowManyAcresToBuy(price, bushels)
+            acres+=acres_bought
+            bushels-=(price*acres_bought)
+
+            acres_sold=self.askHowManyAcresToSell(acres)
+            acres-=acres_sold
+            bushels+=(price*acres_sold)
+
+            grain_to_feed=self.askHowMuchGrainToFeedPeople(bushels)
+            bushels-=grain_to_feed
+
+            acres_planted=self.askHowManyAcresToPlant(acres, population, bushels)
+            acres+=acres_planted
+            bushels-=(2*acres_planted)
+
+            plague_deaths=self.plagueDeaths(population)
+            population-=plague_deaths
+            deaths+=plague_deaths
+
+            starved=self.starvationDeaths(population, grain_to_feed)
+            population-=starved
+            deaths+=starved
+
+            if self.uprising(population, starved)==True: break
+
+            if starved==0: 
+                immigrants=self.immigrants(population, acres, bushels)
+            else:
+                immigrants=0
+            population+=immigrants
+            
+            harvest=self.harvest(acres_planted, bushels)
+            bushels+=harvest
+
+
+            rats_ate=self.grainEatenByRats(bushels)
+            bushels-=rats_ate
+
+            price=self.newCostOfLand()
+
+
+            
+            
+            
+            year+=1
+
+        if year<10:
+            print("you suck ass")
+
     def askHowManyAcresToBuy(self, price, bushels):
-        answer=int(input("HOW MANY ACRES OF LAND DO YOU PLAN ON BUYING?: "))
-
-        max_acres=self.bushels//self.price
-        while answer>max_acres:
-            answer=int(input(f"THINK AGAIN, O MIGHTY MASTER. YOU ONLY HAVE ENOUGH BUSHELS TO BUY {max_acres} ACRES. NOW, THEN, HOW MANY ACRES OF LAND DO YOU PLAN ON BUYING?:"))
-        
-        self.acres+=answer
-        self.bushels-=(answer*self.price)
-
-        return answer
-
-
+        while True:
+            acres=int(input(f"HOW MANY ACRES OF LAND DO PLAN TO BUY?: "))
+            if acres<0:
+                print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {bushels} BUSHELS OF GRAIN!")
+            if acres*price<=bushels:
+                return acres
+            print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {bushels} BUSHELS OF GRAIN!")
+    
     def askHowManyAcresToSell(self, acresOwned):
-        answer=int(input("HOW MANY ACRES OF LAND DO YOU PLAN ON SELLING?: "))
-        
-        while answer>self.acres:
-            answer=int(input(f"THINK AGAIN, O MIGHTY MASTER. YOU ONLY HAVE {self.acres} ACRES. NOW, THEN, HOW MANY ACRES OF LAND DO YOU PLAN ON SELLING?:"))
-
-        self.acres-=answer
-        self.bushels+=(answer*self.price)
-        
-        return answer
-
-
+        while True:
+            acres=int(input(f"HOW MANY ACRES OF LAND DO PLAN TO SELL?: "))
+            if acres<acresOwned:
+                return acres
+            print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {acresOwned} ACRES OF LAND TO USE!")
+    
     def askHowMuchGrainToFeedPeople(self, bushels):
-        answer=int(input("HOW MANY BUSHELS OF GRAIN DO YOU WISH TO FEED YOUR PEOPLE?: "))
-        
-        while answer>self.bushels:
-            answer=int(input(f"THINK AGAIN, O MIGHTY MASTER. YOU ONLY HAVE {self.bushels} OF GRAIN. NOW, THEN, HOW MANY BUSHELS OF GRAIN DO YOU WISH TO FEED YOUR PEOPLE?: "))
-        
-        #Each person needs at least 20 bushels of grain per year to survive
-
-        return answer
-
+         while True:
+            grain_to_feed=int(input(f"HOW MANY BUSHELS OF GRAIN DO PLAN TO FEED TO THE IMBICILES-- I MEAN PEOPLE?: "))
+            if grain_to_feed<bushels:
+                return grain_to_feed
+            print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {bushels} BUSHELS OF GRAIN TO USE!")
+    
     def askHowManyAcresToPlant(self, acresOwned, population, bushels):
-        answer=int(input("HOW MANY ACRES DO YOU WISH TO PLANT WITH SEED?: "))
-
-        while answer>self.bushels//2 or answer>self.people*10 or answer>self.acres:
-            while answer>self.bushels//2: #2 bushels to plant 1 acre
-                answer=int(input(f"THINK AGAIN, O MIGHTY MASTER. YOU ONLY HAVE ENOUGH BUSHELS TO PLANT {self.bushels//2} ACRES. NOW, THEN, HOW MANY ACRES DO YOU WISH TO PLANT WITH SEED?: "))
-            while answer>self.people*10: #Each person can farm at most 10 acres of land
-                answer=int(input(f"THINK AGAIN, O MIGHTY MASTER. YOU ONLY HAVE ENOUGH PEOPLE TO PLANT {self.people*10} ACRES. NOW, THEN, HOW MANY ACRES DO YOU WISH TO PLANT WITH SEED?: "))
-            while answer>self.acres:
-                answer=int(input(f"THINK AGAIN, O MIGHTY MASTER. YOU ONLY HAVE {self.acres} AVAILIBLE. NOW, THEN, HOW MANY ACRES DO YOU WISH TO PLANT WITH SEED?: "))
-
-        self.acres+=(answer)
-        self.bushels-=(answer*2)
-
-        return answer
-
-
-
+        while True:
+            acres=int(input(f"HOW MANY ACRES OF LAND DO PLAN TO PLANT?: "))
+            if acres<bushels//2 and acres<population*10 and acres<acresOwned:
+                return acres
+            if acres>bushels//2:
+                print(f"TO MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {bushels} BUSHELS OF GRAIN TO USE!")
+            if acres>population*10:
+                print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {population} PEOPLE TO PUT TO WORK!")
+            if acres>acresOwned:
+                print(f"TO MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {acresOwned} ACRES OF LAND TO USE!")
 
     def plagueDeaths(self, population):
         if random.randint(0, 99) < 15:
-            self.people = self.people // 2
-
-        
-        
-    def starvationDeaths(self,population, bushelsFedToPeople):
-        #Each person needs 20 bushels of grain to survive. 
-        #If you feed them more than this, they are happy, but the grain is still gone. 
-        #You don't get any benefit from having happy subjects. 
-        #Return the number of deaths from starvation (possibly zero).
-        
-        #if more people than needed are fed, deaths are 0
-        #set people to 
-        if self.askHowMuchGrainToFeedPeople()//20>=self.people:
-            return 0
-        self.people-=(self.askHowMuchGrainToFeedPeople()//20)
-        return self.people-(self.askHowMuchGrainToFeedPeople()//20)
-
+            return population//2
+        return 0
+    
+    def starvationDeaths(self, population, bushelsFedToPeople):
+        fed=bushelsFedToPeople//20
+        return max(0, population-fed)
+    
     def uprising(self, population, howManyPeopleStarved):
-        if self.people/self.starvationDeaths()>=0.45:
+        if howManyPeopleStarved/population>=0.45:
             return True
         return False
-
+    
     def immigrants(self, population, acresOwned, grainInStorage):
-        if self.starvationDeaths==0:
-            return (20 * self.acres + self.bushels) / (100 * self.bushels) + 1
-
+        return int((20 * acresOwned + grainInStorage)/ (100 * population) + 1)
+    
     def harvest(self, acres, bushelsUsedAsSeed):
-        ran_num = random.randint(1, 6)
-        self.bushels+=(ran_num*self.askHowManyAcresToPlant())
-        return ran_num*self.askHowManyAcresToPlant()
+        ran_num=random.randint(1, 6)
+        return ran_num*acres
 
 
+    
     def grainEatenByRats(self, bushels):
-        grain_eaten=0
-        ran_num=random.randint(0, 99)
-        if ran_num < 40:
-            grain_eaten=self.bushels*ran_num//100
-        self.bushels-=grain_eaten
-        return grain_eaten
-
+        if random.randint(0, 99) < 40:
+            return int(bushels*random.randint(10, 30))
+        return 0
+    
     def newCostOfLand(self):
-        self.price=random.randint(17, 23)
-        return self.price
+        return random.randint(17, 23)
+    
+    def startOfYearReport(self, year, acres, bushels, population, price, starved, harvest, harvested_per_acre, immigrants, rats_ate):
+        print("O GREAT HAMMURABI")
+        print(f"YOU ARE IN YEAR {year} OF YOUR TEN YEAR RULE. ")
+        print(f"IN THE PREVIOUS YEAR {starved} PEOPLE STARVED TO DEATH. ")
+        print(f"IN THE PREVIOUS YEAR {immigrants} PEOPLE ENTERED THE KINGDOM. ")
+        print(f"THE POPULATION IS NOW {population}")
+        print(f"WE HARVESTED {harvest} at {harvested_per_acre} PER ACRE. ")
+        print(f"RATS DESTROYED {rats_ate} BUSHELS, LEAVING ONLY {bushels} IN STORAGE. ")
+        print(f"THE CITY OWNS {acres} OF LAND")
+        print(f"LAND IS CURRECTLY VALUED AT {price} BUSHELS PER ACRE")
+        print(" ")
+
+
+
+    
+
+    
+
+
+
+
+
 
 
 
