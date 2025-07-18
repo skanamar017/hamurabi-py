@@ -53,13 +53,15 @@ class Hammurabi:
             
             acres_bought=self.askHowManyAcresToBuy(price, bushels)
             acres+=acres_bought
-            bushels-=(price*acres_bought)
+            bushels=max(bushels-(price*acres_bought), 0)
 
             acres_sold=self.askHowManyAcresToSell(acres)
             acres-=acres_sold
+            acres=max(acres-acres_sold, 0)
             bushels+=(price*acres_sold)
 
             grain_to_feed=self.askHowMuchGrainToFeedPeople(bushels)
+            #start adding  from line 60
             bushels-=grain_to_feed
 
             acres_planted=self.askHowManyAcresToPlant(acres, population, bushels)
@@ -91,6 +93,8 @@ class Hammurabi:
 
             price=self.newCostOfLand()
 
+            
+
 
             
             
@@ -98,7 +102,7 @@ class Hammurabi:
             year+=1
 
         if year<10:
-            print("you suck ass")
+            print("\nyou suck ass")
 
     def askHowManyAcresToBuy(self, price, bushels):
         while True:
