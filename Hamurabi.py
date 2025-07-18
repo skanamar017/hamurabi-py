@@ -54,19 +54,29 @@ class Hammurabi:
             acres_bought=self.askHowManyAcresToBuy(price, bushels)
             acres+=acres_bought
             bushels=max(bushels-(price*acres_bought), 0)
+            print(f"YOU HAVE BOUGHT {acres_bought} for {bushels} BUSHELS at {price} BUSHELS AN ACRE")
+            print(f"YOU CURRENTLY HAVE {acres} ACRES AND {bushels} BUSHELS \n")
 
             acres_sold=self.askHowManyAcresToSell(acres)
             acres=max(acres-acres_sold, 0)
             bushels+=(price*acres_sold)
+            print(f"YOU HAVE SOLD {acres_sold} for {bushels} BUSHELS at {price} BUSHELS AN ACRE")
+            print(f"YOU CURRENTLY HAVE {acres} ACRES AND {bushels} BUSHELS \n")
+
 
             grain_to_feed=self.askHowMuchGrainToFeedPeople(bushels)
             #start adding  from line 60
             bushels=max(bushels-grain_to_feed, 0)
-            bushels-=grain_to_feed
+            print(f"YOU HAVE USED {grain_to_feed} BUSHELS TO FEED YOUR PEOPLE")
+            print(f"YOU CURRENTLY HAVE {acres} ACRES AND {bushels} BUSHELS \n")
+
 
             acres_planted=self.askHowManyAcresToPlant(acres, population, bushels)
-            acres+=acres_planted
-            bushels=(bushels-(2*acres_planted), 0)
+            #acres+=acres_planted
+            bushels=max(bushels-(2*acres_planted), 0)
+            print(f"YOU HAVE PLANTED {acres_planted} ACRES OF LAND WITH {2*acres_planted} BUSHELS of GRAIN")
+            print(f"YOU CURRENTLY HAVE {acres} ACRES AND {bushels} BUSHELS \n")
+
 
             plague_deaths=self.plagueDeaths(population)
             population-=plague_deaths
@@ -102,7 +112,7 @@ class Hammurabi:
             year+=1
 
         if year<10:
-            print("\nyou suck ass")
+            print("you suck ass")
         else:
             self.printSummary(self, deaths, acres, bushels, population)
             
@@ -178,7 +188,7 @@ class Hammurabi:
     
     def grainEatenByRats(self, bushels):
         if random.randint(0, 99) < 40:
-            return int(bushels*random.randint(10, 30))
+            return int(bushels*random.random(0.1, 0.31))
         return 0
     
     def newCostOfLand(self):
@@ -190,7 +200,7 @@ class Hammurabi:
         print(f"IN THE PREVIOUS YEAR {starved} PEOPLE STARVED TO DEATH. ")
         print(f"IN THE PREVIOUS YEAR {immigrants} PEOPLE ENTERED THE KINGDOM. ")
         print(f"THE POPULATION IS NOW {population}")
-        print(f"WE HARVESTED {harvest} at {harvested_per_acre} PER ACRE. ")
+        print(f"WE HARVESTED {harvest} BUSHELS AT {harvested_per_acre} PER ACRE. ")
         print(f"RATS DESTROYED {rats_ate} BUSHELS, LEAVING ONLY {bushels} IN STORAGE. ")
         print(f"THE CITY OWNS {acres} OF LAND")
         print(f"LAND IS CURRECTLY VALUED AT {price} BUSHELS PER ACRE")
