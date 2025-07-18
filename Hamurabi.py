@@ -56,17 +56,17 @@ class Hammurabi:
             bushels=max(bushels-(price*acres_bought), 0)
 
             acres_sold=self.askHowManyAcresToSell(acres)
-            acres-=acres_sold
             acres=max(acres-acres_sold, 0)
             bushels+=(price*acres_sold)
 
             grain_to_feed=self.askHowMuchGrainToFeedPeople(bushels)
             #start adding  from line 60
+            bushels=max(bushels-grain_to_feed, 0)
             bushels-=grain_to_feed
 
             acres_planted=self.askHowManyAcresToPlant(acres, population, bushels)
             acres+=acres_planted
-            bushels-=(2*acres_planted)
+            bushels=(bushels-(2*acres_planted), 0)
 
             plague_deaths=self.plagueDeaths(population)
             population-=plague_deaths
@@ -103,12 +103,17 @@ class Hammurabi:
 
         if year<10:
             print("\nyou suck ass")
+        else:
+            self.printSummary(self, deaths, acres, bushels, population)
+            
+
 
     def askHowManyAcresToBuy(self, price, bushels):
         while True:
             acres=int(input(f"HOW MANY ACRES OF LAND DO PLAN TO BUY?: "))
             if acres<0:
-                print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {bushels} BUSHELS OF GRAIN!")
+                print(f"O MIGHTY MASTER, I ASSUME YOU DON'T WANT TO BUY ANY LAND? VERY WELL. ")
+                return 0
             if acres*price<=bushels:
                 return acres
             print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {bushels} BUSHELS OF GRAIN!")
@@ -116,6 +121,9 @@ class Hammurabi:
     def askHowManyAcresToSell(self, acresOwned):
         while True:
             acres=int(input(f"HOW MANY ACRES OF LAND DO PLAN TO SELL?: "))
+            if acres<0:
+                print(f"O MIGHTY MASTER, I ASSUME YOU DON'T WANT TO SELL ANY LAND? VERY WELL. ")
+                return 0
             if acres<acresOwned:
                 return acres
             print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {acresOwned} ACRES OF LAND TO USE!")
@@ -123,6 +131,9 @@ class Hammurabi:
     def askHowMuchGrainToFeedPeople(self, bushels):
          while True:
             grain_to_feed=int(input(f"HOW MANY BUSHELS OF GRAIN DO PLAN TO FEED TO THE IMBICILES-- I MEAN PEOPLE?: "))
+            if bushels<0:
+                print(f"O MIGHTY MASTER, I ASSUME YOU DON'T WANT TO FEED YOUR PEOPLE? VERY WELL. ")
+                return 0
             if grain_to_feed<bushels:
                 return grain_to_feed
             print(f"O MIGHTY MASTER, SURELY YOU JEST, FOR YOU HAVE ONLY {bushels} BUSHELS OF GRAIN TO USE!")
@@ -130,6 +141,9 @@ class Hammurabi:
     def askHowManyAcresToPlant(self, acresOwned, population, bushels):
         while True:
             acres=int(input(f"HOW MANY ACRES OF LAND DO PLAN TO PLANT?: "))
+            if acres<0:
+                print(f"O MIGHTY MASTER, I ASSUME YOU DON'T WANT TO PUT YOUR LAND TO USE? VERY WELL. ")
+                return 0
             if acres<bushels//2 and acres<population*10 and acres<acresOwned:
                 return acres
             if acres>bushels//2:
@@ -181,6 +195,14 @@ class Hammurabi:
         print(f"THE CITY OWNS {acres} OF LAND")
         print(f"LAND IS CURRECTLY VALUED AT {price} BUSHELS PER ACRE")
         print(" ")
+    
+    def printSummary(self, deaths, acres, bushels, population):
+        print("O GREAT HAMMURABI \n"
+        "IT HAS BEEN 10 YEARS SINCE YOUR RULE, AND YOU HAVE RULED WELL. \n"
+        f"YOU NOW HAVE {bushels} OF GRAIN, {acres} OF LAND, and {population} PEOPLE IN YOUR KINGDOM. \n"
+        f"UNFORTUNATELY YOU HAVE LOST {deaths} PEOPLE FROM PLAGUE AND STARVATION, BUT THEY DO NOT MATTER, AS THEY ARE WEAK. \n"
+        "BUT OVERALL YOU WERE A GOOD RULER AND THE PEOPLE LOVE YOU \n"
+        "WELL DONE. YOU MAY NOW RETURE IN PEACE")
 
 
 
